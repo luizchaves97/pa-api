@@ -1,0 +1,17 @@
+{
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "extends": ["standard", "prettier"],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly",
+    "use": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 11,
+    "sourceType": "module"
+  },
+  "rules": {}
+}
