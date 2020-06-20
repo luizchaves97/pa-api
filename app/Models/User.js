@@ -19,6 +19,22 @@ class User extends Model {
   tokens() {
     return this.hasMany('App/Models/Token')
   }
+
+  addresses() {
+    return this.hasMany('App/Models/Address')
+  }
+
+  locator() {
+    return this.hasOne('App/Models/Locator')
+  }
+
+  renter() {
+    return this.hasOne('App/Models/Renter')
+  }
+
+  deliverer() {
+    return this.hasOne('App/Models/Deliverer')
+  }
 }
 
 module.exports = User

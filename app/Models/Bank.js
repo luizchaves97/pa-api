@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class Bank extends Model {
+  locator() {
+    return this.belongsTo('App/Models/Locator')
+  }
 }
 
 module.exports = Bank

@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class PaymentMethod extends Model {
+  renter() {
+    return this.belongsTo('App/Models/Renter')
+  }
 }
 
 module.exports = PaymentMethod
