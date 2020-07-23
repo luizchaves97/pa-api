@@ -1,5 +1,7 @@
 'use strict'
 
+const Locator = use('App/Models/Locator')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -17,19 +19,10 @@ class LocatorController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index() {
+    const locators = await Locator.query().with('user').fetch()
 
-  /**
-   * Render a form to be used for creating a new locator.
-   * GET locators/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return locators
   }
 
   /**
@@ -40,7 +33,12 @@ class LocatorController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, auth }) {
+    const data = request.only(['store_title', 'store_description'])
+
+    const locator = await Locator.create({ ...data, user_id: auth.user.id })
+
+    return locator
   }
 
   /**
@@ -52,41 +50,47 @@ class LocatorController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params }) {
+    const locator = await Locator.findOrFail(params.id)
+
+    await locator.load('user')
+
+    return locator
   }
 
   /**
-   * Render a form to update an existing locator.
-   * GET locators/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update locator details.
+   * Update locators details.
    * PUT or PATCH locators/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request }) {
+    const locator = await Locator.findOrFail(params.id)
+
+    await locator.load('user')
+
+    const data = request.only(['store_title', 'store_description'])
+    locator.merge(data)
+
+    await locator.save()
+
+    return locator
   }
 
   /**
-   * Delete a locator with id.
+   * Delete a locators with id.
    * DELETE locators/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params }) {
+    const locator = await Locator.findOrFail(params.id)
+
+    await locator.delete()
   }
 }
 

@@ -8,4 +8,10 @@ Route.post('users', 'UserController.store')
 Route.post('sessions', 'SessionController.store')
 
 Route.get('files/:id', 'FileController.show')
-Route.post('files', 'FileController.store')
+
+Route.group(() => {
+  Route.post('files', 'FileController.store')
+
+  Route.resource('locators', 'LocatorController').apiOnly()
+  Route.resource('renters', 'RenterController').apiOnly()
+}).middleware(['auth'])

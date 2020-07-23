@@ -1,5 +1,7 @@
 'use strict'
 
+const Renter = use('App/Models/Renter')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -17,19 +19,10 @@ class RenterController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ request, response, view }) {
+    const renters = await Renter.query().with('user').fetch()
 
-  /**
-   * Render a form to be used for creating a new renter.
-   * GET renters/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return renters
   }
 
   /**
@@ -40,7 +33,12 @@ class RenterController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ auth, request }) {
+    const data = request.only(['biography', 'born_date'])
+
+    const renter = await Renter.create({ ...data, user_id: auth.user.id })
+
+    return renter
   }
 
   /**
@@ -52,19 +50,12 @@ class RenterController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params }) {
+    const renter = await Renter.findOrFail(params.id)
 
-  /**
-   * Render a form to update an existing renter.
-   * GET renters/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+    await renter.load('user')
+
+    return renter
   }
 
   /**
@@ -75,7 +66,17 @@ class RenterController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request }) {
+    const renter = await Renter.findOrFail(params.id)
+
+    await renter.load('user')
+
+    const data = request.only(['biography', 'born_date'])
+    renter.merge(data)
+
+    await renter.save()
+
+    return renter
   }
 
   /**
@@ -86,7 +87,10 @@ class RenterController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params }) {
+    const renter = await Renter.findOrFail(params.id)
+
+    await renter.delete()
   }
 }
 
