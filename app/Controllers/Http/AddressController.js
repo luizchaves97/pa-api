@@ -1,5 +1,7 @@
 'use strict'
 
+const Address = use('App/Models/Address')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -17,19 +19,12 @@ class AddressController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ auth }) {
+    const addreess = await Address.query()
+      .where('user_id', auth.user.id)
+      .fetch()
 
-  /**
-   * Render a form to be used for creating a new address.
-   * GET addresses/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return addreess
   }
 
   /**
@@ -40,7 +35,21 @@ class AddressController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, auth }) {
+    const data = request.only([
+      'cep',
+      'address',
+      'number',
+      'complement',
+      'neighborhood',
+      'city',
+      'state',
+      'reference_point',
+    ])
+
+    const address = await Address.create({ ...data, user_id: auth.user.id })
+
+    return address
   }
 
   /**
@@ -52,19 +61,10 @@ class AddressController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params }) {
+    const address = await Address.findOrFail(params.id)
 
-  /**
-   * Render a form to update an existing address.
-   * GET addresses/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+    return address
   }
 
   /**
@@ -75,7 +75,24 @@ class AddressController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, response }) {
+    const address = await Address.findOrFail(params.id)
+
+    const data = request.only([
+      'cep',
+      'address',
+      'number',
+      'complement',
+      'neighborhood',
+      'city',
+      'state',
+      'reference_point',
+    ])
+    address.merge(data)
+
+    await address.save()
+
+    return address
   }
 
   /**
@@ -86,7 +103,10 @@ class AddressController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
+    const address = await Address.findOrFail(params.id)
+
+    address.delete()
   }
 }
 

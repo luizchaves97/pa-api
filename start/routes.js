@@ -12,6 +12,7 @@ Route.get('files/:id', 'FileController.show')
 Route.group(() => {
   Route.post('files', 'FileController.store')
 
+  Route.resource('addresses', 'AddressController').apiOnly()
   Route.resource('locators', 'LocatorController').apiOnly()
   Route.resource('renters', 'RenterController').apiOnly()
 }).middleware(['auth'])
