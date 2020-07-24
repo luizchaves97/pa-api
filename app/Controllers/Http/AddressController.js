@@ -75,7 +75,7 @@ class AddressController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {
+  async update({ params, request }) {
     const address = await Address.findOrFail(params.id)
 
     const data = request.only([
