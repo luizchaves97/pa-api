@@ -14,6 +14,7 @@ Route.group(() => {
 
   Route.resource('addresses', 'AddressController').apiOnly()
   Route.resource('renters', 'RenterController').apiOnly()
+  Route.resource('renters.payments', 'PaymentMethodController').apiOnly()
   Route.resource('locators', 'LocatorController').apiOnly()
-  Route.resource('locators.bank', 'BankController').apiOnly()
+  Route.resource('locators.banks', 'BankController').apiOnly()
 }).middleware(['auth'])

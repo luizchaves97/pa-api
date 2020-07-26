@@ -7,7 +7,7 @@ class PaymentMethodSchema extends Schema {
   up() {
     this.create('payment_methods', (table) => {
       table.increments()
-      table.integer('card_number').notNullable().unique()
+      table.bigInteger('card_number').notNullable().unique()
       table.string('validity').notNullable()
       table.integer('cvv').notNullable()
       table.string('cardholder_name').notNullable()
