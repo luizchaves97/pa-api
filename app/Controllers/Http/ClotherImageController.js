@@ -1,5 +1,9 @@
 'use strict'
 
+const ClotherImage = use('App/Models/ClotherImage')
+const Helpers = use('Helpers')
+const CLOTHER_IMAGE_FOLDER = 'clother-images'
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -17,19 +21,12 @@ class ClotherImageController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ params }) {
+    const images = await ClotherImage.query()
+      .where('clother_id', params.clothers_id)
+      .fetch()
 
-  /**
-   * Render a form to be used for creating a new clotherimage.
-   * GET clotherimages/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return images
   }
 
   /**
@@ -40,7 +37,38 @@ class ClotherImageController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response, params }) {
+    try {
+      if (!request.file('file')) return
+
+      const upload = request.file('file', { size: '5mb' })
+
+      const fileName = `${Date.now()}.${upload.subtype}`
+
+      await upload.move(Helpers.tmpPath(CLOTHER_IMAGE_FOLDER), {
+        name: fileName,
+      })
+
+      if (!upload.moved()) {
+        throw upload.error()
+      }
+
+      const file = await ClotherImage.create({
+        file: fileName,
+        name: upload.clientName,
+        type: upload.type,
+        subtype: upload.subtype,
+        clother_id: params.clothers_id,
+      })
+
+      return file
+    } catch (error) {
+      return response.status(error.status).send({
+        error: {
+          message: 'Erro no upload de arquivo',
+        },
+      })
+    }
   }
 
   /**
@@ -52,30 +80,12 @@ class ClotherImageController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ response, params }) {
+    const file = await ClotherImage.findOrFail(params.id)
 
-  /**
-   * Render a form to update an existing clotherimage.
-   * GET clotherimages/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update clotherimage details.
-   * PUT or PATCH clotherimages/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
+    return response.download(
+      Helpers.tmpPath(`${CLOTHER_IMAGE_FOLDER}/${file.file}`)
+    )
   }
 
   /**
@@ -86,7 +96,10 @@ class ClotherImageController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params }) {
+    const file = await ClotherImage.findOrFail(params.id)
+
+    file.delete()
   }
 }
 

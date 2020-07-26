@@ -10,8 +10,8 @@ class ClotherImage extends Model {
     return ['url']
   }
 
-  getUrl({ id }) {
-    return `${Env.get('APP_URL')}/clother-images/${id}`
+  getUrl({ id, clother_id: clotherId }) {
+    return `${Env.get('APP_URL')}/clothers/${clotherId}/images/${id}`
   }
 
   clother() {
