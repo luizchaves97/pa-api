@@ -106,7 +106,7 @@ class ClotherController {
   async destroy({ params }) {
     const clother = await Clother.findOrFail(params.id)
 
-    clother.delete()
+    await clother.delete()
   }
 }
 

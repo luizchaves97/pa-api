@@ -98,10 +98,10 @@ class BankController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {
+  async destroy({ params }) {
     const bank = await Bank.findOrFail(params.id)
 
-    bank.delete()
+    await bank.delete()
   }
 }
 

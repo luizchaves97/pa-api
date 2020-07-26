@@ -1,5 +1,7 @@
 'use strict'
 
+const Schedule = use('App/Models/Schedule')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -8,28 +10,16 @@
  * Resourceful controller for interacting with schedules
  */
 class ScheduleController {
-  /**
-   * Show a list of all schedules.
-   * GET schedules
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async locators({ params }) {
+    const schedules = await Schedule.query().where('locator_id', params.id)
+
+    return schedules
   }
 
-  /**
-   * Render a form to be used for creating a new schedule.
-   * GET schedules/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async renters({ params }) {
+    const schedules = await Schedule.query().where('renter_id', params.id)
+
+    return schedules
   }
 
   /**
@@ -40,7 +30,21 @@ class ScheduleController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request }) {
+    const data = request.only([
+      'start_date',
+      'due_date',
+      'price',
+      'renter_id',
+      'locator_id',
+      'deliverer_id',
+      'clother_id',
+      'payment_method_id',
+    ])
+
+    const schedule = await Schedule.create(data)
+
+    return schedule
   }
 
   /**
@@ -52,30 +56,10 @@ class ScheduleController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params }) {
+    const schedule = await Schedule.findOrFail(params.id)
 
-  /**
-   * Render a form to update an existing schedule.
-   * GET schedules/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
-   * Update schedule details.
-   * PUT or PATCH schedules/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
+    return schedule
   }
 
   /**
@@ -86,7 +70,10 @@ class ScheduleController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params }) {
+    const schedule = await Schedule.findOrFail(params.id)
+
+    await schedule.delete()
   }
 }
 

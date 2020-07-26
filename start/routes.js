@@ -22,4 +22,8 @@ Route.group(() => {
   Route.resource('locators.clothers', 'ClotherController').apiOnly()
 
   Route.resource('clothers.images', 'ClotherImageController').apiOnly()
+
+  Route.get('schedules/locators_id/:id', 'ScheduleController.locators')
+  Route.get('schedules/renters_id/:id', 'ScheduleController.renters')
+  Route.get('schedules/:id', 'ScheduleController.show')
 }).middleware(['auth'])

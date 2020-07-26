@@ -106,7 +106,7 @@ class AddressController {
   async destroy({ params, request, response }) {
     const address = await Address.findOrFail(params.id)
 
-    address.delete()
+    await address.delete()
   }
 }
 

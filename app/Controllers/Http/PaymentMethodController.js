@@ -104,7 +104,7 @@ class PaymentMethodController {
   async destroy({ params }) {
     const paymentMethod = await PaymentMethod.findOrFail(params.id)
 
-    paymentMethod.delete()
+    await paymentMethod.delete()
   }
 }
 

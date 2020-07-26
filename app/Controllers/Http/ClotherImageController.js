@@ -99,7 +99,7 @@ class ClotherImageController {
   async destroy({ params }) {
     const file = await ClotherImage.findOrFail(params.id)
 
-    file.delete()
+    await file.delete()
   }
 }
 
