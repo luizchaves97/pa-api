@@ -1,5 +1,7 @@
 'use strict'
 
+const Clother = use('App/Models/Clother')
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -17,19 +19,12 @@ class ClotherController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ params }) {
+    const clothers = await Clother.query()
+      .where('locator_id', params.locators_id)
+      .fetch()
 
-  /**
-   * Render a form to be used for creating a new clother.
-   * GET clothers/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    return clothers
   }
 
   /**
@@ -40,7 +35,22 @@ class ClotherController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, params }) {
+    const data = request.only([
+      'name',
+      'price',
+      'discount_price',
+      'size',
+      'color',
+      'description',
+    ])
+
+    const clother = await Clother.create({
+      ...data,
+      locator_id: params.locators_id,
+    })
+
+    return clother
   }
 
   /**
@@ -52,19 +62,10 @@ class ClotherController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show({ params }) {
+    const clother = await Clother.findOrFail(params.id)
 
-  /**
-   * Render a form to update an existing clother.
-   * GET clothers/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+    return clother
   }
 
   /**
@@ -75,7 +76,23 @@ class ClotherController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request }) {
+    const clother = await Clother.findOrFail(params.id)
+
+    const data = request.only([
+      'name',
+      'price',
+      'discount_price',
+      'size',
+      'color',
+      'description',
+    ])
+
+    clother.merge(data)
+
+    clother.save()
+
+    return clother
   }
 
   /**
@@ -86,7 +103,10 @@ class ClotherController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params }) {
+    const clother = await Clother.findOrFail(params.id)
+
+    clother.delete()
   }
 }
 
