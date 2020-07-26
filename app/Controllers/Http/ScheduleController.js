@@ -11,13 +11,17 @@ const Schedule = use('App/Models/Schedule')
  */
 class ScheduleController {
   async locators({ params }) {
-    const schedules = await Schedule.query().where('locator_id', params.id)
+    const schedules = await Schedule.query()
+      .where('locator_id', params.id)
+      .fetch()
 
     return schedules
   }
 
   async renters({ params }) {
-    const schedules = await Schedule.query().where('renter_id', params.id)
+    const schedules = await Schedule.query()
+      .where('renter_id', params.id)
+      .fetch()
 
     return schedules
   }
